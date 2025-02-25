@@ -71,24 +71,54 @@ app.post('/update-pasien', function (req, res) {
     const { nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp } = req.body;
     const pasienId = req.query.id;
 
-    if(!nama || !alamat || !jenis_kelamin || !berat_badan || !tinggi_badan || !golongan_darah || !usia || !tensi || !no_hp) {
-        return res.status(400).json({ message: "Data Tidak Boleh Kosong"});
-    }
-
-    const queryStr = `SELECT nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp FROM pasien WHERE id = ?`;
-    conn.query(queryStr, [nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp], function (err, results) {
+    const queryStr = `UPDATE pasien SET nama=?, alamat=?, jenis_kelamin=?, berat_badan=?, tinggi_badan=?, golongan_darah=?, usia=?, tensi=?, no_hp=? WHERE id=?`;
+    const values = [ nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp, pasienId];
+    conn.query(queryStr, values, function (err, results) {
         if (err) {
             console.log(err)
             return res.status(500).json ({
                 "success": false,
-                "message": "gagal mengubah data pasien",
-                "data": err.message
+                "message": err.sqlMessage,
+                "data": null
             })
         }
-        return res.status(200).json({
-            "success": true,
-            "message": "berhasil mengubah data pasien",
-            "data": results
-        })
+
+        if(results.affectedRows > 0) {
+            return res.status(200).json({
+                "success": true,
+                "message": "berhasil mengubah data pasien",
+                "data": results
+            })
+        } else {
+            return res.status(404).json({
+                "success": false,
+                "message": "Gagal mengubah data pasien",
+                "data": null
+            })
+        }
+    })
+})
+
+app.post('/delete-pasien', function (req, res) {
+    const pasienId = req.body.id;
+    const queryStr = `DELETE FROM pasien WHERE id = ?`
+    conn.query(queryStr, [pasienId], function (err, results) {
+        if (err) {
+            console.log(err)
+            return res.status(500).json ({
+                "success": false,
+                "message": err.sqlMessage,
+                "data": null
+            })
+        }
+        if (results.affectedRows > 0) {
+            return res.status(200).json({
+                "success": true,
+                "message": "Pasien berhasil dihapus",
+                "data": results
+            })
+        } else {
+            return res.status(404).json ({ "message": "Pasien tidak ditemukan" })
+        }
     })
 })
