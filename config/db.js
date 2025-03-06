@@ -1,15 +1,18 @@
-const mysql = require('mysql');
+import mysql from 'mysql';
+import dotenv from 'dotenv'
+dotenv.config();
 
-const conn = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'simanting_db'
+
+const connection = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
 });
 
-conn.getConnection((err) => {
+connection.getConnection((err) => {
     if (err) throw err;
     console.log('Database Berhasil terkoneksi.');
 });
 
-module.exports = conn;
+export default connection;

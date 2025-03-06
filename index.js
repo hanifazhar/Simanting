@@ -1,5 +1,5 @@
-const express = require('express');
-const conn = require('./config/db.js');
+import express from 'express';
+import connection from './config/db.js'
 
 const app = express();
 
@@ -11,7 +11,7 @@ app.listen(3000, () => {
 
 app.get('/get-data-pasien', function(req, res) {
      const queryStr = "SELECT * FROM pasien";
-     conn.query(queryStr, function(err, results) {
+     connection.query(queryStr, function(err, results) {
         if (err) {
             console.log(err);
             return res.status(500).json ({
@@ -32,7 +32,7 @@ app.post('/add-pasien', function (req, res) {
     const { nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp } = req.body;
 
     const queryStr = ` INSERT INTO pasien ( nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp ) VALUES (?,?,?,?,?,?,?,?,?) `
-    conn.query(queryStr, [nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp], function (err, results) {
+    connection.query(queryStr, [nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp], function (err, results) {
         if (err) {
             console.log(err);
             return res.status(500).json ({
@@ -52,7 +52,7 @@ app.post('/add-pasien', function (req, res) {
 app.get('/get-data-pasien-by-id', function(req, res) {
     const pasienId = req.query.id;
     const queryStr = `SELECT * FROM pasien WHERE id = ?`;
-    conn.query(queryStr, [pasienId], function(err, results) {
+    connection.query(queryStr, [pasienId], function(err, results) {
        if (err) {
         return res.status(500).json({ message: 'Gagal Menampilkan Data Pasien' });
        }
@@ -73,7 +73,7 @@ app.post('/update-pasien', function (req, res) {
 
     const queryStr = `UPDATE pasien SET nama=?, alamat=?, jenis_kelamin=?, berat_badan=?, tinggi_badan=?, golongan_darah=?, usia=?, tensi=?, no_hp=? WHERE id=?`;
     const values = [ nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp, pasienId];
-    conn.query(queryStr, values, function (err, results) {
+    connection.query(queryStr, values, function (err, results) {
         if (err) {
             console.log(err)
             return res.status(500).json ({
@@ -102,7 +102,7 @@ app.post('/update-pasien', function (req, res) {
 app.post('/delete-pasien', function (req, res) {
     const pasienId = req.body.id;
     const queryStr = `DELETE FROM pasien WHERE id = ?`
-    conn.query(queryStr, [pasienId], function (err, results) {
+    connection.query(queryStr, [pasienId], function (err, results) {
         if (err) {
             console.log(err)
             return res.status(500).json ({
