@@ -1,18 +1,7 @@
-import express from 'express';
-import connection from './config/db.js'
-import cors from 'cors';
+import connection from '../config/db.js';
 
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-
-app.listen(3000, () => {
-    console.log("Server berjalan di port 3000")
-});
-
-app.get('/get-data-pasien', function(req, res) {
-     const queryStr = "SELECT * FROM pasien";
+export const getDataPasien = (req, res) => {
+    const queryStr = "SELECT * FROM pasien";
      connection.query(queryStr, function(err, results) {
         if (err) {
             console.log(err);
@@ -28,9 +17,9 @@ app.get('/get-data-pasien', function(req, res) {
             "data": results
         });
     })
-})
+}
 
-app.post('/add-pasien', function (req, res) {
+export const addPasien = (req, res) => {
     const { nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp } = req.body;
 
     const queryStr = ` INSERT INTO pasien ( nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp ) VALUES (?,?,?,?,?,?,?,?,?) `
@@ -49,9 +38,9 @@ app.post('/add-pasien', function (req, res) {
             "data": results
         });
     })
-})
+}
 
-app.get('/get-data-pasien-by-id', function(req, res) {
+export const getDataPasienById = (req, res) => {
     const pasienId = req.query.id;
     const queryStr = `SELECT * FROM pasien WHERE id = ?`;
     connection.query(queryStr, [pasienId], function(err, results) {
@@ -67,9 +56,9 @@ app.get('/get-data-pasien-by-id', function(req, res) {
            "data": results
        });
    })
-})
+}
 
-app.post('/update-pasien', function (req, res) {
+export const updatePasien = (req, res) => {
     const { nama, alamat, jenis_kelamin, berat_badan, tinggi_badan, golongan_darah, usia, tensi, no_hp } = req.body;
     const pasienId = req.query.id;
 
@@ -99,9 +88,9 @@ app.post('/update-pasien', function (req, res) {
             })
         }
     })
-})
+}
 
-app.post('/delete-pasien', function (req, res) {
+export const deletePasien = (req, res) => {
     const pasienId = req.body.id;
     const queryStr = `DELETE FROM pasien WHERE id = ?`
     connection.query(queryStr, [pasienId], function (err, results) {
@@ -123,4 +112,4 @@ app.post('/delete-pasien', function (req, res) {
             return res.status(404).json ({ "message": "Pasien tidak ditemukan" })
         }
     })
-})
+}
